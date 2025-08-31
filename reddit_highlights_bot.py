@@ -215,6 +215,7 @@ def build_markdown(sections: Dict[str, List]) -> (str, str):
 
     header_lines = [
         f"Discover the most important highlights on r/{SOURCE_SUBREDDIT} from the last 7 days.",
+        "Check the [Content Wiki](https://www.reddit.com/r/CShortDramas/wiki/test3/) for even more of our creative work!",
         "",
         "---",
         "",
