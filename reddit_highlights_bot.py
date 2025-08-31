@@ -211,7 +211,7 @@ def group_by_categories(candidates: List) -> Dict[str, List]:
 
 # ===================== Build post body (Markdown) =====================
 def build_markdown(sections: Dict[str, List]) -> (str, str):
-    title = "✨ Our Highlights"  # post title (not repeated in the body)
+    title = "✨ Our Highlights✨"  # post title (not repeated in the body)
 
     header_lines = [
         f"Discover the most important highlights on r/{SOURCE_SUBREDDIT} from the last 7 days.",
