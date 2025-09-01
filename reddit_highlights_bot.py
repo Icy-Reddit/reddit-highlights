@@ -294,16 +294,50 @@ def apply_post_flair(submission, flair_text_target: str) -> bool:
         print(f"[ERR] Failed to set flair: {e}")
         return False
 
-def maybe_sticky_submission(submission, position: str = "top", suggested_sort: Optional[str] = None):
+def is_our_highlight(subm) -> bool:
+    """Uznajemy post za 'nasz', jeśli autorem jest bot albo tytuł zawiera 'Our Highlights'."""
+    try:
+        author_ok = (subm.author and subm.author.name.lower() == (USERNAME or "").lower())
+    except Exception:
+        author_ok = False
+    title_ok = "our highlights" in (getattr(subm, "title", "") or "").lower()
+    return author_ok or title_ok
+
+def unsticky_previous_in_slot(sr, position: str = "bottom"):
+    """
+    Zdejmuje poprzedni sticky w danym slocie (top/bottom), jeśli to nasz highlight.
+    """
+    number = 2 if str(position).lower().strip() == "bottom" else 1
+    try:
+        prev = sr.sticky(number=number)  # pobierz istniejącego stickiego z tego slotu
+        if prev and is_our_highlight(prev):
+            prev.mod.sticky(state=False)
+            print(f"[OK] Unstickied previous '{'bottom' if number==2 else 'top'}' highlight: https://redd.it/{prev.id}")
+        else:
+            print(f"[INFO] Slot {'bottom' if number==2 else 'top'} occupied by a different post — leaving as is.")
+    except Exception as e:
+        # brak stickiego w slocie lub brak uprawnień też trafi tu
+        print(f"[INFO] No previous sticky to unstick in this slot or cannot read it: {e}")
+
+def maybe_sticky_submission(submission, position: str = "top", suggested_sort: str | None = None):
     try:
         bottom = (str(position).lower().strip() == "bottom")
+        sr = submission.subreddit
+
+        # 1) zdejmij poprzedni sticky w tym samym slocie, jeśli to nasz highlight
+        unsticky_previous_in_slot(sr, position="bottom" if bottom else "top")
+
+        # 2) przypnij nowy
         submission.mod.sticky(state=True, bottom=bottom)
         print(f"[OK] Post stickied at '{'bottom' if bottom else 'top'}' slot.")
+
+        # 3) suggested sort (opcjonalnie)
         if suggested_sort:
             submission.mod.suggested_sort(suggested_sort)
             print(f"[OK] Suggested sort set: {suggested_sort}")
+
     except Exception as e:
-        print(f"[ERR] Failed to sticky or set suggested sort: {e}")
+        print(f"[ERR] Could not sticky or set sort: {e}")
 
 # ===================== Main =====================
 def main():
