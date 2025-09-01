@@ -75,7 +75,7 @@ CATEGORIES: Dict[str, dict] = {
     "recommendations": {
         "icon": "⭐",
         "flairs": ["⭐ Recommendations", "Recommendation", "Recommendations"],
-        "label": "Discussions",
+        "label": "Recommendations",
         "limit": 5
     },
     "actors&couples": {
@@ -102,7 +102,7 @@ CATEGORY_ORDER = [
     "drama review",
     "vertical vortex",
     "discussions",
-    "recommendations"
+    "recommendations",
     "actors&couples",
     "fun",
     "found&shared",
