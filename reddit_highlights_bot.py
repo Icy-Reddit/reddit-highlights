@@ -28,6 +28,8 @@ MIN_SCORE = int(os.getenv("MIN_SCORE", "0"))
 DRY_RUN = os.getenv("DRY_RUN", "true").lower() == "true"
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 TZ_NAME = os.getenv("TIMEZONE", "Europe/Warsaw")
+DRAMA_REVIEW_LIMIT = int(os.getenv("DRAMA_REVIEW_LIMIT", "5"))
+DISCUSSIONS_LIMIT  = int(os.getenv("DISCUSSIONS_LIMIT", "5"))
 
 # presentation options
 SHOW_THUMBNAILS = os.getenv("SHOW_THUMBNAILS", "false").lower() == "true"
@@ -35,7 +37,7 @@ SHOW_THUMBNAILS = os.getenv("SHOW_THUMBNAILS", "false").lower() == "true"
 # optional: flair & sticky on the target subreddit
 HIGHLIGHTS_FLAIR = (os.getenv("HIGHLIGHTS_FLAIR") or "").strip()
 STICKY = os.getenv("STICKY", "false").lower() == "true"
-STICKY_POSITION = os.getenv("STICKY_POSITION", "top")
+STICKY_POSITION = os.getenv("STICKY_POSITION", "bottom")
 SUGGESTED_SORT: Optional[str] = (os.getenv("SUGGESTED_SORT") or "").strip() or None
 
 # if provided – instead of creating a new post the bot will add a COMMENT under this ID
@@ -49,30 +51,26 @@ except Exception:
 
 # ===================== Categories, limits and order =====================
 # "limit": None -> no limit; number -> TOP N
+# ===================== Categories, limits and order =====================
+# "limit": None -> no limit; number -> TOP N
 CATEGORIES: Dict[str, dict] = {
-    "vertical vortex": {
-        "icon": "🌀",
-        "flairs": ["🍿 Vertical Vortex", "Vertical Vortex"],
-        "label": "Vertical Vortex",
-        "limit": None,   # all
-    },
     "drama review": {
         "icon": "🎭",
         "flairs": ["📝 Drama Review", "Drama Review"],
         "label": "Drama Review",
-        "limit": 5,
+        "limit": DRAMA_REVIEW_LIMIT,   #  5 (or 7 from .env)
     },
-    "found&shared": {
-        "icon": "🔗",
-        "flairs": ["Found & Shared", "Found&Shared", "Found/Shared"],
-        "label": "Found & Shared",
-        "limit": 5,
+    "vertical vortex": {
+        "icon": "🌀",
+        "flairs": ["🍿 Vertical Vortex", "Vertical Vortex"],
+        "label": "Vertical Vortex",
+        "limit": 5,                   
     },
     "discussions": {
         "icon": "💬",
         "flairs": ["🗨️ Discussion", "Discussion", "Discussions"],
         "label": "Discussions",
-        "limit": 5,
+        "limit": DISCUSSIONS_LIMIT,    # 5 (or 7 from .env)
     },
     "actors&couples": {
         "icon": "⭐",
@@ -84,17 +82,23 @@ CATEGORIES: Dict[str, dict] = {
         "icon": "🧩",
         "flairs": ["🔥 Fun 🔥", "Fun"],
         "label": "Fun",
-        "limit": 3,
+        "limit": 5,
+    },
+    "found&shared": {
+        "icon": "🔗",
+        "flairs": ["Found & Shared", "Found&Shared", "Found/Shared"],
+        "label": "Found & Shared",
+        "limit": 5,
     },
 }
 
 CATEGORY_ORDER = [
-    "vertical vortex",
     "drama review",
-    "found&shared",
+    "vertical vortex",
     "discussions",
     "actors&couples",
     "fun",
+    "found&shared",
 ]
 
 # ===================== Helpers =====================
@@ -297,6 +301,9 @@ def maybe_sticky_submission(submission, position: str = "top", suggested_sort: O
 # ===================== Main =====================
 def main():
     reddit = make_reddit()
+    
+    print(f"[INFO] Sticky={STICKY}  StickyPosition={STICKY_POSITION}  SuggestedSort={SUGGESTED_SORT}")
+    
     print(f"[INFO] SOURCE={SOURCE_SUBREDDIT}  TARGET={TARGET_SUBREDDIT}  DRY_RUN={DRY_RUN}")
 
     # 1) Collect 7-day candidates (from source sub)
