@@ -3,12 +3,14 @@ A pinned community highlight post (SLOT 2) appears once a day. Each time it pull
 
 🎭 Drama Review – TOP 7 (longer, original content, members contribution)
 
-🌀 Vertical Vortex – TOP 5
+🍿 Vertical Vortex – TOP 5
 
 💬 Discussions – TOP 7 (members contribute the most here, worth spotlighting)
 
-⭐ Actors & Couples – TOP 5
+⭐ Recommendations - TOP 5
 
-🧩 Fun – TOP 5
+🌟 Actors & Couples – TOP 5
+
+🔥 Fun – TOP 5
 
 🔗 Found & Shared – TOP 5 
