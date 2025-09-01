@@ -18,7 +18,7 @@ jobs:
           TIMEZONE: "Europe/Warsaw"
           DRY_RUN: "false"                  # <—— to jest kluczowe
           SOURCE_SUBREDDIT: "CShortDramas"
-          TARGET_SUBREDDIT: "CShortDramas"
+          TARGET_SUBREDDIT: "MyHighlightBotTests"
           MIN_SCORE: "0"
           SHOW_THUMBNAILS: "false"
           HIGHLIGHTS_FLAIR: "Community Highlights"
