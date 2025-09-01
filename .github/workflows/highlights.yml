@@ -42,9 +42,9 @@ jobs:
           SHOW_THUMBNAILS: "false"
 
           HIGHLIGHTS_FLAIR: ${{ secrets.HIGHLIGHTS_FLAIR }}
-          STICKY: ${{ secrets.STICKY }}
-          STICKY_POSITION: ${{ secrets.STICKY_POSITION }}
-          SUGGESTED_SORT: ${{ secrets.SUGGESTED_SORT }}
+          STICKY: "true"
+          STICKY_POSITION: "bottom"
+          SUGGESTED_SORT: "confidence"
         run: |
           python - << 'PY'
           import os, sys, subprocess, datetime
