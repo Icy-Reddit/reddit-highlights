@@ -3,9 +3,9 @@ name: Reddit Highlights (daily 19:00 CET/CEST)
 on:
   schedule:
     # 17:00 UTC = 19:00 Europe/Warsaw ( CET, and CEST)
-    - cron: "0 18 * * *"
+    - cron: "30 18 * * *"
     # (option) bufor 5 minutes
-    - cron: "5 18 * * *"
+    - cron: "35 18 * * *"
   workflow_dispatch:
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run bot (daily at 19:00 Europe/Warsaw)
+      - name: (scheduled)
         env:
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
