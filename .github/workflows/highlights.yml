@@ -2,8 +2,11 @@ name: Reddit Highlights (daily 19:00 CET/CEST)
 
 on:
   schedule:
-    - cron: "0 * * * *"   # every hour (UTC)
-  workflow_dispatch:       # manual run button
+    # 17:00 UTC = 19:00 Europe/Warsaw ( CET, and CEST)
+    - cron: "0 17 * * *"
+    # (option) bufor 5 minutes
+    - cron: "5 17 * * *"
+  workflow_dispatch:
 
 jobs:
   run:
@@ -25,7 +28,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run bot (publish only at 19:00 Europe/Warsaw)
+      - name: Run bot (daily at 19:00 Europe/Warsaw)
         env:
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
@@ -34,14 +37,17 @@ jobs:
           REDDIT_USER_AGENT: "highlights-bot/1.0 by u/${{ secrets.REDDIT_USERNAME }}"
 
           SOURCE_SUBREDDIT: "CShortDramas"
-          TARGET_SUBREDDIT: "MyHighlightBotTests"   # na start forum testowe
-          DRY_RUN: "false"                           # podgląd w logach, nie publikacja
-          DEBUG: "true"
+          TARGET_SUBREDDIT: "MyHighlightBotTests"
+
           SCAN_LIMIT: "1500"
+          MIN_SCORE: "0"
+          DRY_RUN: "false"        # false = post, true = view only
+          DEBUG: "true"
           TIMEZONE: "Europe/Warsaw"
+
           SHOW_THUMBNAILS: "false"
 
-          HIGHLIGHTS_FLAIR: ${{ secrets.HIGHLIGHTS_FLAIR }}
+          HIGHLIGHTS_FLAIR: "Community Highlights"   
           
           DRAMA_REVIEW_LIMIT: "7"
           DISCUSSIONS_LIMIT: "7"
@@ -50,20 +56,6 @@ jobs:
           STICKY_POSITION: "bottom"
           SUGGESTED_SORT: "confidence"
         run: |
-          python - << 'PY'
-          import os, sys, subprocess, datetime
-          from zoneinfo import ZoneInfo
+          python -u reddit_highlights_bot.py
 
-          tz = ZoneInfo(os.getenv("TIMEZONE","Europe/Warsaw"))
-          now = datetime.datetime.now(tz)
-          print("[INFO] Local time:", now.isoformat())
-
-          if now.hour == 19:
-              print("[INFO] It's 19:00 local — running bot.")
-              rc = subprocess.call([sys.executable, "reddit_highlights_bot.py"])
-              sys.exit(rc)
-          else:
-              print("[SKIP] Not 19:00 local — skipping.")
-              sys.exit(0)
-          PY
 
