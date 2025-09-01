@@ -3,10 +3,10 @@ name: Reddit Highlights (daily 19:00 CET/CEST)
 on:
   schedule:
     # 17:00 UTC = 19:00 Europe/Warsaw ( CET, and CEST)
-    - cron: '50 19 * * *'
+    - cron: '0 * * * *'
 
     # (option) bufor 5 minutes
-    - cron: '55 19 * * *'
+    - cron: '5 * * * *'
   workflow_dispatch:
 
 jobs:
