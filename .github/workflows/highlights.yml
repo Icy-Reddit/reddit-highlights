@@ -3,7 +3,7 @@ name: Reddit Highlights (21:30 Europe/Warsaw)
 on:
   schedule:
     # 19:30 UTC = 21:30 Europe/Warsaw (CEST)
-    - cron: "30 19 * * *"
+    - cron: "50 19 * * *"
   workflow_dispatch:
 
 jobs:
