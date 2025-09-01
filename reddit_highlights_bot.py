@@ -61,7 +61,7 @@ CATEGORIES: Dict[str, dict] = {
         "limit": DRAMA_REVIEW_LIMIT,   #  5 (or 7 from .env)
     },
     "vertical vortex": {
-        "icon": "🌀",
+        "icon": "🍿",
         "flairs": ["🍿 Vertical Vortex", "Vertical Vortex"],
         "label": "Vertical Vortex",
         "limit": 5,                   
@@ -72,14 +72,20 @@ CATEGORIES: Dict[str, dict] = {
         "label": "Discussions",
         "limit": DISCUSSIONS_LIMIT,    # 5 (or 7 from .env)
     },
-    "actors&couples": {
+    "recommendations": {
         "icon": "⭐",
+        "flairs": ["⭐ Recommendations", "Recommendation", "Recommendations"],
+        "label": "Discussions",
+        "limit": 5
+    },
+    "actors&couples": {
+        "icon": "🌟",
         "flairs": ["🌟Actors/Couples", "Actors/Couples", "Actors & Couples", "Actors&Couples"],
         "label": "Actors & Couples",
         "limit": 5,
     },
     "fun": {
-        "icon": "🧩",
+        "icon": "🔥",
         "flairs": ["🔥 Fun 🔥", "Fun"],
         "label": "Fun",
         "limit": 5,
@@ -96,6 +102,7 @@ CATEGORY_ORDER = [
     "drama review",
     "vertical vortex",
     "discussions",
+    "recommendations"
     "actors&couples",
     "fun",
     "found&shared",
