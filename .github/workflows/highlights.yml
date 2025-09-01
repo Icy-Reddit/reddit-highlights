@@ -35,13 +35,17 @@ jobs:
 
           SOURCE_SUBREDDIT: "CShortDramas"
           TARGET_SUBREDDIT: "MyHighlightBotTests"   # na start forum testowe
-          DRY_RUN: "true"                           # podgląd w logach, nie publikacja
-          DEBUG: "false"
+          DRY_RUN: "false"                           # podgląd w logach, nie publikacja
+          DEBUG: "true"
           SCAN_LIMIT: "1500"
           TIMEZONE: "Europe/Warsaw"
           SHOW_THUMBNAILS: "false"
 
           HIGHLIGHTS_FLAIR: ${{ secrets.HIGHLIGHTS_FLAIR }}
+          
+          DRAMA_REVIEW_LIMIT: "7"
+          DISCUSSIONS_LIMIT: "7"
+          
           STICKY: "true"
           STICKY_POSITION: "bottom"
           SUGGESTED_SORT: "confidence"
