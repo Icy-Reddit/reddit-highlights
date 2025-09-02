@@ -1,8 +1,8 @@
-name: Reddit Highlights — 1× dziennie po 19:00 (Europe/Warsaw)
+name: Reddit Highlights — 1× dziennie po 13:00 (Europe/Warsaw)
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # częste próby
+    - cron: "*/15 * * * *"   # częste próby przez cały dzień
   workflow_dispatch:
 
 jobs:
@@ -13,6 +13,8 @@ jobs:
     concurrency:
       group: reddit-highlights-daily
       cancel-in-progress: false
+    env:
+      GATE_HHMM: "1300"   # <— godzina bramkowa w HHMM (Warszawa)
 
     steps:
       - name: Checkout repo
@@ -34,39 +36,40 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # ⬇️ TU JEST BRAMKA CZASOWA
-      - name: Ustal datę i czy jest po 10:00 w Warszawie
+      # Bramkowanie po 13:00 (Europe/Warsaw) + klucz daty do cache
+      - name: Ustal datę i bramkę (Warsaw)
         id: clock
         run: |
-          echo "DATE_KEY=$(TZ=Europe/Warsaw date +%Y-%m-%d)" >> $GITHUB_ENV
+          echo "date_key=$(TZ=Europe/Warsaw date +%Y-%m-%d)" >> $GITHUB_OUTPUT
           echo "LOCAL_TIME=$(TZ=Europe/Warsaw date +'%Y-%m-%d %H:%M %Z')" >> $GITHUB_ENV
-          echo "UTC_TIME=$(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_ENV
-          if [ "$(TZ=Europe/Warsaw date +%H%M)" -ge "1000" ]; then
-            echo "after10=true"  >> $GITHUB_OUTPUT
+          echo "UTC_TIME=$(date -u +'%Y-%m-%d %H:%M UTC')"   >> $GITHUB_ENV
+          GATE="${GATE_HHMM:-1300}"
+          if [ "$(TZ=Europe/Warsaw date +%H%M)" -ge "${GATE}" ]; then
+            echo "after_gate=true"  >> $GITHUB_OUTPUT
           else
-            echo "after10=false" >> $GITHUB_OUTPUT
+            echo "after_gate=false" >> $GITHUB_OUTPUT
           fi
           echo "[TIME] Local: $LOCAL_TIME"
           echo "[TIME] UTC:   $UTC_TIME"
-          echo "[GATE] after10 = $(cat $GITHUB_OUTPUT | sed -n 's/^after10=//p')"
+          echo "[GATE] using GATE_HHMM=${GATE}"
 
       - name: Sprawdź flagę „opublikowano dziś”
         id: cache-flag
         uses: actions/cache@v4
         with:
-          path: .highlights-state
-          key: highlights-${{ env.DATE_KEY }}
+          path: .highlights-state/${{ steps.clock.outputs.date_key }}.txt
+          key:  highlights-${{ steps.clock.outputs.date_key }}
 
-      - name: SKIP — przed 10:00 w Warszawie
-        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after10 == 'false'
-        run: echo "Jest ${LOCAL_TIME} — przed 19:00. Czekam na późniejszy run."
+      - name: SKIP — przed godziną bramkową
+        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after_gate == 'false'
+        run: echo "Jest ${LOCAL_TIME} — przed ${GATE_HHMM}. Czekam na późniejszy run."
 
       - name: SKIP — dziś już publikowano
         if: steps.cache-flag.outputs.cache-hit == 'true'
-        run: echo "Dzisiejsza publikacja (${DATE_KEY}) już odnotowana — pomijam."
+        run: echo "Dzisiejsza publikacja (${{ steps.clock.outputs.date_key }}) już odnotowana — pomijam."
 
       - name: Run bot (publikuj)
-        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after10 == 'true'
+        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after_gate == 'true'
         env:
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
@@ -75,8 +78,8 @@ jobs:
           REDDIT_USER_AGENT: "highlights-bot/1.0 by YOUR_NEW_NICK"
           TIMEZONE: "Europe/Warsaw"
           DRY_RUN: "false"
-          SOURCE_SUBREDDIT: "CShortDramas"
-          TARGET_SUBREDDIT: "YOUR_TARGET_SUBREDDIT"
+          SOURCE_SUBREDDIT: "CShortDramas"          # ← podmień jeśli chcesz
+          TARGET_SUBREDDIT: "YOUR_TARGET_SUBREDDIT" # ← podmień jeśli chcesz
           MIN_SCORE: "0"
           SHOW_THUMBNAILS: "false"
           HIGHLIGHTS_FLAIR: "Community Highlights"
@@ -86,12 +89,28 @@ jobs:
           STICKY_POSITION: "bottom"
           SUGGESTED_SORT: "confidence"
         run: |
+          set -o pipefail
           echo "[RUN] Odpalam bota o $LOCAL_TIME (Warsaw)."
-          python -u ./reddit_highlights_bot.py
+          python -u ./reddit_highlights_bot.py 2>&1 | tee bot.log
+
+      # Zapisujemy flagę TYLKO jeśli faktycznie było "Posted/Comment added"
+      - name: Wykryj, czy faktycznie opublikowano
+        id: pubcheck
+        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after_gate == 'true'
+        run: |
+          if grep -E "^\[OK\] Posted: https://redd\.it/" bot.log || grep -E "^\[OK\] Comment added under:" bot.log; then
+            echo "published=true" >> $GITHUB_OUTPUT
+            echo "✅ Wykryto opublikowany post."
+          else
+            echo "published=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ Nie znaleziono sygnału publikacji w logu."
+          fi
 
       - name: Zapisz flagę „opublikowano dziś”
-        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after19 == 'true'
+        if: steps.pubcheck.outputs.published == 'true'
         run: |
           mkdir -p .highlights-state
-          echo "posted_at_local=$LOCAL_TIME" > .highlights-state/${DATE_KEY}.txt
-          echo "posted_at_utc=$UTC_TIME"   >> .highlights-state/${DATE_KEY}.txt
+          echo "posted_at_local=$LOCAL_TIME" > .highlights-state/${{ steps.clock.outputs.date_key }}.txt
+          echo "posted_at_utc=$UTC_TIME"   >> .highlights-state/${{ steps.clock.outputs.date_key }}.txt
+          echo "[DONE] Zapisano znacznik dnia: ${{ steps.clock.outputs.date_key }}"
+
