@@ -79,7 +79,7 @@ jobs:
           TIMEZONE: "Europe/Warsaw"
           DRY_RUN: "false"
           SOURCE_SUBREDDIT: "CShortDramas"          # ← podmień jeśli chcesz
-          TARGET_SUBREDDIT: "YOUR_TARGET_SUBREDDIT" # ← podmień jeśli chcesz
+          TARGET_SUBREDDIT: "MyHighlightBotTests" # ← podmień jeśli chcesz
           MIN_SCORE: "0"
           SHOW_THUMBNAILS: "false"
           HIGHLIGHTS_FLAIR: "Community Highlights"
