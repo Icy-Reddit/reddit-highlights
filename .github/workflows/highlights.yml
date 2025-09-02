@@ -35,20 +35,20 @@ jobs:
           pip install -r requirements.txt
 
       # ⬇️ TU JEST BRAMKA CZASOWA
-      - name: Ustal datę i czy jest po 19:00 w Warszawie
+      - name: Ustal datę i czy jest po 10:00 w Warszawie
         id: clock
         run: |
           echo "DATE_KEY=$(TZ=Europe/Warsaw date +%Y-%m-%d)" >> $GITHUB_ENV
           echo "LOCAL_TIME=$(TZ=Europe/Warsaw date +'%Y-%m-%d %H:%M %Z')" >> $GITHUB_ENV
           echo "UTC_TIME=$(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_ENV
-          if [ "$(TZ=Europe/Warsaw date +%H%M)" -ge "0700" ]; then
-            echo "after19=true"  >> $GITHUB_OUTPUT
+          if [ "$(TZ=Europe/Warsaw date +%H%M)" -ge "1000" ]; then
+            echo "after10=true"  >> $GITHUB_OUTPUT
           else
-            echo "after19=false" >> $GITHUB_OUTPUT
+            echo "after10=false" >> $GITHUB_OUTPUT
           fi
           echo "[TIME] Local: $LOCAL_TIME"
           echo "[TIME] UTC:   $UTC_TIME"
-          echo "[GATE] after19 = $(cat $GITHUB_OUTPUT | sed -n 's/^after19=//p')"
+          echo "[GATE] after10 = $(cat $GITHUB_OUTPUT | sed -n 's/^after10=//p')"
 
       - name: Sprawdź flagę „opublikowano dziś”
         id: cache-flag
@@ -57,8 +57,8 @@ jobs:
           path: .highlights-state
           key: highlights-${{ env.DATE_KEY }}
 
-      - name: SKIP — przed 19:00 w Warszawie
-        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after19 == 'false'
+      - name: SKIP — przed 10:00 w Warszawie
+        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after10 == 'false'
         run: echo "Jest ${LOCAL_TIME} — przed 19:00. Czekam na późniejszy run."
 
       - name: SKIP — dziś już publikowano
@@ -66,7 +66,7 @@ jobs:
         run: echo "Dzisiejsza publikacja (${DATE_KEY}) już odnotowana — pomijam."
 
       - name: Run bot (publikuj)
-        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after19 == 'true'
+        if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after10 == 'true'
         env:
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
