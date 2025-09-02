@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .highlights-state/${{ steps.clock.outputs.date_key }}.txt
-          key: highlights-v2-${{ steps.clock.outputs.date_key }}
+          key:  highlights-${{ steps.clock.outputs.date_key }}
 
       - name: SKIP — przed godziną bramkową
         if: steps.cache-flag.outputs.cache-hit != 'true' && steps.clock.outputs.after_gate == 'false'
