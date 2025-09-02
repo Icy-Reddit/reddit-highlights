@@ -1,4 +1,4 @@
-name: Reddit Highlights — 1× dziennie po 13:00 (Europe/Warsaw)
+name: Reddit Highlights — 1× daily after 17:00 (Europe/Warsaw)
 
 on:
   schedule:
@@ -14,7 +14,7 @@ jobs:
       group: reddit-highlights-daily
       cancel-in-progress: false
     env:
-      GATE_HHMM: "1300"   # <— godzina bramkowa w HHMM (Warszawa)
+      GATE_HHMM: "1700"   # <— godzina bramkowa w HHMM (Warszawa)
 
     steps:
       - name: Checkout repo
@@ -36,14 +36,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Bramkowanie po 13:00 (Europe/Warsaw) + klucz daty do cache
+      # Bramkowanie po 17:00 (Europe/Warsaw) + klucz daty do cache
       - name: Ustal datę i bramkę (Warsaw)
         id: clock
         run: |
           echo "date_key=$(TZ=Europe/Warsaw date +%Y-%m-%d)" >> $GITHUB_OUTPUT
           echo "LOCAL_TIME=$(TZ=Europe/Warsaw date +'%Y-%m-%d %H:%M %Z')" >> $GITHUB_ENV
           echo "UTC_TIME=$(date -u +'%Y-%m-%d %H:%M UTC')"   >> $GITHUB_ENV
-          GATE="${GATE_HHMM:-1300}"
+          GATE="${GATE_HHMM:-1700}"
           if [ "$(TZ=Europe/Warsaw date +%H%M)" -ge "${GATE}" ]; then
             echo "after_gate=true"  >> $GITHUB_OUTPUT
           else
@@ -79,7 +79,7 @@ jobs:
           TIMEZONE: "Europe/Warsaw"
           DRY_RUN: "false"
           SOURCE_SUBREDDIT: "CShortDramas"          # ← podmień jeśli chcesz
-          TARGET_SUBREDDIT: "MyHighlightBotTests" # ← podmień jeśli chcesz
+          TARGET_SUBREDDIT: "CShortDramas" # ← podmień jeśli chcesz
           MIN_SCORE: "0"
           SHOW_THUMBNAILS: "false"
           HIGHLIGHTS_FLAIR: "Community Highlights"
