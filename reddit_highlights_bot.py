@@ -84,6 +84,12 @@ CATEGORIES: Dict[str, dict] = {
         "label": "Actors & Couples",
         "limit": 5,
     },
+    "sneak peek": {
+        "icon": "🔮",
+        "flairs": ["🔮 Sneak Peek", "Sneak Peek"],
+        "label": "Sneak Peek",
+        "limit": 3,
+    
     "fun": {
         "icon": "🔥",
         "flairs": ["🔥 Fun 🔥", "Fun"],
@@ -104,6 +110,7 @@ CATEGORY_ORDER = [
     "discussions",
     "recommendations",
     "actors&couples",
+    "sneak peek",
     "fun",
     "found&shared",
 ]
