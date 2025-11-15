@@ -89,7 +89,7 @@ CATEGORIES: Dict[str, dict] = {
         "flairs": ["🔮 Sneak Peek", "Sneak Peek"],
         "label": "Sneak Peek",
         "limit": 3,
-    
+    },
     "fun": {
         "icon": "🔥",
         "flairs": ["🔥 Fun 🔥", "Fun"],
