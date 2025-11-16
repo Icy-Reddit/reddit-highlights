@@ -109,8 +109,8 @@ CATEGORY_ORDER = [
     "vertical vortex",
     "discussions",
     "recommendations",
-    "actors&couples",
     "sneak peek",
+    "actors&couples",
     "fun",
     "found&shared",
 ]
