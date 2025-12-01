@@ -9,9 +9,9 @@ A pinned community highlight post (SLOT 2) appears once a day. Each time it pull
 
 ⭐ Recommendations - TOP 5
 
-🌟 Actors & Couples – TOP 5
-
 🔮 Sneak Peek - TOP 3
+
+🌟 Actors & Couples – TOP 5
 
 🔥 Fun – TOP 5
 
