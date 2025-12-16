@@ -18,3 +18,10 @@ A pinned community highlight post (SLOT 2) appears once a day. Each time it pull
 🔗 Found & Shared – TOP 5 
 
 📢 Mod News - TOP 3
+
+
+NSFW Filter - no adult content (16.12.2025)
+Event option: 
+#  Important 🚨
+#  EVENT 🎉
+# 📢 Mod News
