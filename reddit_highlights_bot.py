@@ -30,6 +30,11 @@ DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 TZ_NAME = os.getenv("TIMEZONE", "Europe/Warsaw")
 DRAMA_REVIEW_LIMIT = int(os.getenv("DRAMA_REVIEW_LIMIT", "5"))
 DISCUSSIONS_LIMIT  = int(os.getenv("DISCUSSIONS_LIMIT", "5"))
+EVENT_START = (os.getenv("EVENT_START") or "").strip()
+EVENT_END = (os.getenv("EVENT_END") or "").strip()
+EVENT_NAME = (os.getenv("EVENT_NAME") or "").strip()
+EVENT_BODY = (os.getenv("EVENT_BODY") or "").strip()
+
 
 # presentation options
 SHOW_THUMBNAILS = os.getenv("SHOW_THUMBNAILS", "false").lower() == "true"
@@ -128,6 +133,23 @@ def make_reddit() -> praw.Reddit:
 def now_local():
     return datetime.now(ZONE)
 
+def is_event_period() -> bool:
+    """
+    Returns True if today is between EVENT_START and EVENT_END (inclusive).
+    If dates are missing or invalid, returns False.
+    """
+    if not EVENT_START or not EVENT_END:
+        return False
+
+    try:
+        start = datetime.fromisoformat(EVENT_START).date()
+        end = datetime.fromisoformat(EVENT_END).date()
+        today = now_local().date()
+        return start <= today <= end
+    except Exception:
+        # if dates are invalid, just ignore the event
+        return False
+
 def to_local(utc_ts: float):
     return datetime.fromtimestamp(utc_ts, tz=timezone.utc).astimezone(ZONE)
 
@@ -166,12 +188,24 @@ def fetch_candidates_7days_hybrid(reddit: praw.Reddit, subreddit_name: str, scan
 
     try:
         for s in sr.new(limit=scan_limit):
+            # pomijamy NSFW
+            if getattr(s, "over_18", False):
+                if DEBUG:
+                    print(f"[DEBUG] Skipping NSFW post from /new: {s.id} – {clean_one_line(s.title)[:80]!r}")
+                continue
+
             if s.id in seen:
                 continue
             if datetime.fromtimestamp(s.created_utc, tz=timezone.utc) >= since_utc:
                 picked.append(s); seen.add(s.id)
 
         for s in sr.top(time_filter="week", limit=max(1, scan_limit // 2)):
+            # pomijamy NSFW
+            if getattr(s, "over_18", False):
+                if DEBUG:
+                    print(f"[DEBUG] Skipping NSFW post from /top: {s.id} – {clean_one_line(s.title)[:80]!r}")
+                continue
+
             if s.id in seen:
                 continue
             if datetime.fromtimestamp(s.created_utc, tz=timezone.utc) >= since_utc:
@@ -229,17 +263,45 @@ def group_by_categories(candidates: List) -> Dict[str, List]:
 
 # ===================== Build post body (Markdown) =====================
 def build_markdown(sections: Dict[str, List]) -> (str, str):
-    title = "✨ Our Highlights✨"  # post title (not repeated in the body)
+    # --- tytuł posta ---
+    base_title = "✨ Our Highlights✨"
 
+    if is_event_period() and EVENT_NAME:
+        # np. "✨ Our Highlights✨ · 📰 MOD News"
+        title = f"{base_title} · {EVENT_NAME}"
+    else:
+        title = base_title
+
+    # --- header postu ---
     header_lines = [
         f"Discover the most important highlights on r/{SOURCE_SUBREDDIT} from the last 7 days.",
         "",
+    ]
+
+    # blok eventu między Discover a Check...
+    if is_event_period() and EVENT_NAME:
+        # nazwa eventu (pogrubiona)
+        header_lines.append(f"**{EVENT_NAME}**")
+
+        # opcjonalny tekst z linkiem z .env
+        if EVENT_BODY:
+            header_lines.extend([
+                "",
+                EVENT_BODY,
+            ])
+
+        # pusta linia po bloku eventu
+        header_lines.append("")
+
+    # dalej standardowy tekst
+    header_lines.extend([
         "Check the [Content Wiki](https://www.reddit.com/r/CShortDramas/wiki/test3/) for even more of our creative work!",
         "",
         "---",
         "",
-    ]
+    ])
 
+    # reszta funkcji bez zmian:
     body_parts = []
     for key in CATEGORY_ORDER:
         cfg = CATEGORIES[key]
