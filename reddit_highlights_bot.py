@@ -273,15 +273,20 @@ def build_markdown(sections: Dict[str, List]) -> (str, str):
         title = base_title
 
     # --- header postu ---
+    event_active = is_event_period() and EVENT_NAME
+    
     header_lines = [
         f"Discover the most important highlights on r/{SOURCE_SUBREDDIT} from the last 7 days.",
         "",
     ]
 
-    # blok eventu między Discover a Check...
-    if is_event_period() and EVENT_NAME:
-        # nazwa eventu (pogrubiona)
-        header_lines.append(f"**{EVENT_NAME}**")
+    # Kreska + blok eventu między Discover a Check...
+    if event_active:
+        header_lines.extend([
+            "---",
+            "",
+            f"### **{EVENT_NAME}**",  # większe + pogrubione
+        ])      
 
         # opcjonalny tekst z linkiem z .env
         if EVENT_BODY:
