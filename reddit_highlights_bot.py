@@ -300,7 +300,7 @@ def build_markdown(sections: Dict[str, List]) -> (str, str):
 
     # dalej standardowy tekst
     header_lines.extend([
-        "Check the [Content Wiki](https://www.reddit.com/r/CShortDramas/wiki/test3/) for even more of our creative work!",
+        "Check the [Content Wiki](https://www.reddit.com/r/CShortDramas/wiki/creative-content/) for even more of our creative work!",
         "",
         "---",
         "",
