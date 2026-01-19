@@ -69,6 +69,12 @@ CATEGORIES: Dict[str, dict] = {
         "icon": "🍿",
         "flairs": ["🍿 Vertical Vortex", "Vertical Vortex"],
         "label": "Vertical Vortex",
+        "limit": 5,                     
+    },
+     "translated by us": {
+        "icon": "💌",
+        "flairs": ["💌 Translated by Us", "Translated by Us"],
+        "label": "Translated by Us",
         "limit": 5,                   
     },
     "discussions": {
@@ -112,6 +118,7 @@ CATEGORIES: Dict[str, dict] = {
 CATEGORY_ORDER = [
     "drama review",
     "vertical vortex",
+    "translated by us",
     "discussions",
     "recommendations",
     "sneak peek",
