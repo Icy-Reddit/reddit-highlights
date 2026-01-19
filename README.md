@@ -5,6 +5,8 @@ A pinned community highlight post (SLOT 2) appears once a day. Each time it pull
 
 🍿 Vertical Vortex – TOP 5
 
+💌 Translated by Us - TOP 5
+
 💬 Discussions – TOP 7 (members contribute the most here, worth spotlighting)
 
 ⭐ Recommendations - TOP 5
