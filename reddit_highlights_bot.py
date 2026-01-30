@@ -69,13 +69,7 @@ CATEGORIES: Dict[str, dict] = {
         "icon": "🍿",
         "flairs": ["🍿 Vertical Vortex", "Vertical Vortex"],
         "label": "Vertical Vortex",
-        "limit": 5,                     
-    },
-     "translated by us": {
-        "icon": "💌",
-        "flairs": ["💌 Translated by Us", "Translated by Us"],
-        "label": "Translated by Us",
-        "limit": 5,                   
+        "limit": 5,                                       
     },
     "discussions": {
         "icon": "💬",
@@ -107,24 +101,16 @@ CATEGORIES: Dict[str, dict] = {
         "label": "Fun",
         "limit": 5,
     },
-    "found&shared": {
-        "icon": "🔗",
-        "flairs": ["Found & Shared", "Found&Shared", "Found/Shared"],
-        "label": "Found & Shared",
-        "limit": 5,
-    },
 }
 
 CATEGORY_ORDER = [
     "drama review",
     "vertical vortex",
-    "translated by us",
     "discussions",
     "recommendations",
     "sneak peek",
     "actors&couples",
     "fun",
-    "found&shared",
 ]
 
 # ===================== Helpers =====================
